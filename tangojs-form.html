@@ -1,0 +1,72 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+
+<link rel="import" href="../tangojs-label/tangojs-label.html">
+<link rel="import" href="../tangojs-input/tangojs-input.html">
+<link rel="import" href="../tangojs-led/tangojs-led.html">
+<link rel="import" href="../tangojs-button/tangojs-button.html">
+
+<script src="node_modules/tangojs-web-components/dist/tangojs-web-components.js"></script>
+
+<dom-module id="tangojs-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <div>Device {{info.name}}</div>
+    <template is="dom-repeat" filter="isScalar" items="{{attrs}}">
+    <tangojs-input model="{{ model }}/[[item.name]]" poll-period=3000> </tangojs-input>
+    </template>
+
+    <template is="dom-repeat" items="{{commands}}">
+      <tangojs-button model="{{ model }}/[[item.cmd_name]]"</tangojs-button>
+    </template>
+  </template>
+
+  <script>
+    /**
+     * `tangojs-form`
+     * TangoJS Device Form
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TangojsForm extends tangojs.web.util.mixins.withTangoDevice(Polymer.Element) {
+      static get is() { return 'tangojs-form'; }
+
+      static get properties(){
+	return {
+          attrs:{
+            type: Array
+	  },
+          commands:{
+            type: Array,
+            observer: 'commandsChanged'
+	  }
+	}
+      }
+
+      proxyChanged(){
+
+	this.proxy[this.model].get_attribute_info().then( list => this.attrs = list)
+	this.proxy[this.model].command_list_query().then(list => this.commands = list)
+
+      }
+
+      commandsChanged(){
+	console.log(this.commands)
+	//this.notifyPath('commands');
+      }
+
+      isScalar(item){
+	return (item.data_format == window.tangojs.core.tango.AttrDataFormat.SCALAR)
+      }
+
+    }
+
+    window.customElements.define(TangojsForm.is, TangojsForm);
+  </script>
+</dom-module>
