@@ -16,7 +16,7 @@
       }
     </style>
     <div>Device {{info.name}}</div>
-    <tangojs-led model="{{ model }}/[[item.name]]" poll-period=3000></tangojs-led>
+    <tangojs-led model="{{ model }}/state" poll-period=3000></tangojs-led>
     <template is="dom-repeat" filter="isScalar" items="{{attrs}}">
       <tangojs-input model="{{ model }}/[[item.name]]" poll-period=3000></tangojs-input>
     </template>
